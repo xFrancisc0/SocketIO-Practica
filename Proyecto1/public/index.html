@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>My First Heading</h1>
+
+<p>My first paragraph.</p>
+
+<!-- Ejercicio 1 -->
+<button onClick="Envio_Y_Recepcion_Ejercicio1()">Ejercicio 1</button>
+
+<!-- Ejercicio 2 -->
+<div id="login">
+    <input type="text" id="nombre" name="nombre" placeholder="nombre"></input>
+    <input type="password" id="contrasena" name="contrasena" placeholder="contrasena"></input>
+    <button onClick="Logear()">Ejercicio 2</button>
+</div>
+
+
+<!-- Ejercicio 3 -->
+<textarea id="Mensaje_input" rows="4" cols="50" placeholder="Escribe un mensaje..."></textarea>
+<button onClick="Enviar_Y_Recibir_Mensaje()">Ejercicio 3</button>
+
+<div id="cont_mensajes">
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.6.0.js"
+  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  crossorigin="anonymous"></script>
+<script>
+    //orden: emit -> on
+    //socket.emit("name", {data})
+    //io.on("name", callback)
+    //Se emite data y se recibe un callback
+
+    const socket = io.connect();
+
+    function Envio_Y_Recepcion_Ejercicio1(){
+        //En el cliente, el socket es el cliente y el socket es el server  (socket - socket)
+        socket.emit("EnvioEJ1", {"nombre": "Francisco"})
+        socket.on("RespuestaEJ1", function(data){ console.log(JSON.stringify(data)) })
+    }
+
+    function Logear(){
+        if($("#login #nombre").val() != ""){
+            socket.emit("EnvioEJ2", {"Nombre" : $("#login #nombre").val(), "Contrasena" : $("#login #password").val() })
+        }else{
+            alert("Debe ingresar un usuario.");
+        }
+    }
+
+    function Enviar_Y_Recibir_Mensaje(){
+        socket.emit("EnvioEJ3", {"Mensaje" : $("#Mensaje_input").val() })
+    }
+
+    socket.on("RespuestaEJ2", function(data){ alert(JSON.stringify(data)) })
+
+    socket.on("RespuestaEJ3", function(data){ 
+            console.log("data: "+JSON.stringify(data))
+            if(data.ok){
+                $("#cont_mensajes").append("<p>"+data.Data.Nombre+": "+data.Data.Mensaje+"</p>")
+            }else{
+                console.log("Debe logearse el usuario")
+            }
+        })
+
+</script>
+
+</body>
+</html>
